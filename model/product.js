@@ -6,10 +6,9 @@ module.exports = {
     getAllProduct: (req,res) =>{
         return new Promise((resolve, reject) =>{
             // const sql = 'select * from product '
-            const category= req.query.category
-            console.log(category)
-            const sql  = `SELECT * from product ${category ? `WHERE product_category LIKE'${category}'`:''} `
-                
+            const id_category= req.query.id_category
+            console.log(id_category)
+            const sql  = `SELECT product.product_id, product.product_name, product.product_image, product.product_price, product.product_desc, category.category_name  from product JOIN category ON product.id_category = category.category_id ${id_category ? `WHERE product.id_category LIKE'${id_category}'`:''}  `
             db.query(sql, (err,results) =>{
                 if(err) {
                     reject({
@@ -26,8 +25,8 @@ module.exports = {
     },
     postProduct: (req,res) =>{
         return new Promise((resolve, reject) =>{
-            const {product_name, product_image,product_price, product_desc, product_category} = req.body
-            const sql = `INSERT INTO product (product_name, product_image, product_price ,product_desc, product_category) VALUES ('${product_name}', '${product_image}', ${product_price},'${product_desc}', '${product_category}' )`
+            const {product_name, product_image,product_price, product_desc, id_category} = req.body
+            const sql = `INSERT INTO product (product_name, product_image, product_price ,product_desc, id_category) VALUES ('${product_name}', '${product_image}', ${product_price},'${product_desc}', '${id_category}' )`
             db.query(sql, (err,results) =>{
                 if(err) {
                     reject({
@@ -83,7 +82,7 @@ module.exports = {
     removeProduct : (req,res) =>{
         return new Promise((resolve, reject) =>{
             const {id} = req.params
-            db.query(`SELECT profile_image FROM product WHERE product_id = ${id}`,(err,result ) =>{
+            db.query(`SELECT product_image FROM product WHERE product_id = ${id}`,(err,result ) =>{
                 if(err){
                     reject({
                         message: err
@@ -121,7 +120,7 @@ module.exports = {
     },  getProductById: (req,res) =>{
         return new Promise((resolve, reject) =>{
             const {id} =req.params
-            const sql = `SELECT * from product WHERE product_id= ${id} `
+            const sql = `SELECT product.product_id, product.product_name, product.product_image, product.product_price, product.product_desc, category.category_name  from product JOIN category ON product.id_category = category.category_id WHERE product.product_id= ${id} `
             db.query(sql, (err,results) =>{
                 if(err) {
                     reject({
@@ -136,12 +135,10 @@ module.exports = {
             })
         })
     },
-    getProductByCategory: (req,res) =>{
+    getSize: (req,res) =>{
         return new Promise((resolve, reject) =>{
-            const {category} =req.query
-            // const sql = `SELECT * from product WHERE product_category= ${category} `
-            const sql  = `SELECT * from product ${category ? `ORDER BY product_category '${category}'`:''} `
-        
+            const {id} =req.params
+            const sql = `SELECT size.code, size.ket FROM product_size JOIN size ON product_size.id_size = size.id_size WHERE product_size.product_size_id =${id};`
             db.query(sql, (err,results) =>{
                 if(err) {
                     reject({
@@ -149,11 +146,10 @@ module.exports = {
                     })
                 }
                 resolve({
-                    message: "get product success by id",
-                    status: 200,
-                    data: results
+                    results
                 })
             })
         })
     },
+
 }
