@@ -19,9 +19,12 @@ module.exports ={
                 return res.status(500).json({ success: false, message: 'Error: Email already registered' })
             }
             let hashedPassword = bcrypt.hashSync(password, 10)
+            const imageDefault = 'default-profile.jpg'
+
             setData = {
                 ...req.body,
                 password : hashedPassword,
+                profile_image: imageDefault
                
             }
             const results = await Auth.register(setData)
@@ -53,10 +56,10 @@ module.exports ={
             if(compare === false){
                 return res.status(404).json({ success: false, message: 'Error: Wrong Email / Password' })
             }
-            const token = jwt.sign({user_id: results[0].id_users, role: results[0].role}, process.env.JWT_SECRET_KEY, {
+            const token = jwt.sign({user_id: results[0].account_id, role: results[0].account_role}, process.env.JWT_SECRET_KEY, {
                 expiresIn: '1 day'
             })
-           return res.status(200).json({success: true, message: "Login Success", token, role: results[0].role })
+           return res.status(200).json({success: true, message: "Login Success", token, role: results[0].account_role })
 
         }catch(err){
             console.log(err)
