@@ -6,6 +6,7 @@ const {isLogin} = require('../helper/auth')
 
 router.get('/', isLogin, usersController.getUserId)
 router.patch('/', isLogin, upload.single('profile_image'), usersController.update)
+router.delete('/', isLogin, usersController.update)
 
 
 
